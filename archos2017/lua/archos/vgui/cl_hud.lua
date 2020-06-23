@@ -1,0 +1,71 @@
+// ARCHOS
+// -- cl_hud
+// ARCHOS
+
+local health = 100
+local armor = 100
+local xps = 0
+local level = 0
+local ping = 0
+
+local tx1 = Material("icon16/information.png")
+local tx2 = Material("icon16/coins.png")
+local tx3 = Material("icon16/award_star_gold_2.png")
+
+ARCHOS.Hook.Add("HUDPaint","Hud_Draw",function()
+
+	if not ARCHOS.CurrentLanguage then return end
+	health = Lerp(10*FrameTime(),health,math.Clamp(LocalPlayer():Health(),0,100)) 
+	armor = Lerp(10*FrameTime(),armor,LocalPlayer():Armor()) 
+	ping = Lerp(10*FrameTime(),ping,LocalPlayer():Ping())
+	
+	xps = Lerp(10*FrameTime(),xps,LocalPlayer():GetNWInt("xps")) 
+	level = Lerp(10*FrameTime(),level,LocalPlayer():GetNWInt("level")) 
+	
+	draw.RoundedBox(0, 5, ScrH() - 140 - 20, 420, 150, ARCHOS.Colors["background"])
+	
+	draw.RoundedBox(0, 10, ScrH() - 15 - 20, health*4.1, 15, Color(255,0,0,255))
+	draw.RoundedBox(0, 10, ScrH() - 35 - 20, armor*4.1, 15, Color(0,255,255,255))
+	draw.RoundedBox(0, 10, ScrH() - 55 - 20, math.Clamp(ping*4.1,0,410), 15, Color(0,255,0,255))
+	
+	
+	draw.SimpleText(LocalPlayer():Health(), "ARCHOS_Text_Small", 15, ScrH() - 1 - 34, ARCHOS.Colors["text"])
+	draw.SimpleText(math.Round(armor), "ARCHOS_Text_Small", 15, ScrH() - 15 - 40, ARCHOS.Colors["text"])
+	draw.SimpleText(math.Round(ping), "ARCHOS_Text_Small", 15, ScrH() - 35 - 40, ARCHOS.Colors["text"])
+	
+	if avatar == nil && LocalPlayer != nil then
+		avatar = vgui.Create("AvatarImage")
+		avatar:SetSize(64,64)
+		avatar:SetPos(10,ScrH() - 135 - 20)
+		avatar:SetPlayer(LocalPlayer(),64)
+	end
+	
+	concommand.Add("archos_hud_avatar",function()
+		avatar:Remove()
+		avatar = nil
+	end)
+	
+	surface.SetDrawColor(255,255,255,255)
+	surface.SetMaterial(tx1)
+	surface.DrawTexturedRect(80,ScrH() - 132 - 20,16,16)
+	
+	surface.SetDrawColor(255,255,255,255)
+	surface.SetMaterial(tx2)
+	surface.DrawTexturedRect(80,ScrH() - 112 - 20,16,16)
+	
+	surface.SetDrawColor(255,255,255,255)
+	surface.SetMaterial(tx3)
+	surface.DrawTexturedRect(80,ScrH() - 92 - 20,16,16)
+	
+	draw.SimpleText(LocalPlayer():Nick().." ["..ARCHOS.CurrentLanguage.Usergroups[LocalPlayer():GetUserGroup()].."]", "ARCHOS_Header", 97, ScrH() - 135 - 20, ARCHOS.Colors["text"])
+	draw.SimpleText(math.Round(xps).." XP", "ARCHOS_Text", 97, ScrH() - 115 - 20, ARCHOS.Colors["text"])
+	draw.SimpleText("Level "..math.Round(level), "ARCHOS_Text", 97, ScrH() - 95 - 20, ARCHOS.Colors["text"])
+end)
+
+ARCHOS.Hook.Add("HUDShouldDraw","Hud_RemoveDefault",function(name)
+	local HUD = {"CHudHealth","CHudBattery"}
+	for k,element in pairs(HUD)do
+		if name==element then return false end
+	end
+	return true
+end)

@@ -1,0 +1,55 @@
+-- ARCHOS.PlayTime = {}
+-- ARCHOS.PlayTime.Limit = 50
+
+-- if SERVER then
+	-- ARCHOS.PlayTime.SteamAPI = "E590A83F22C4E1533893DB5B3689A609" -- Steam Api (http://steamcommunity.com/dev/apikey)
+	-- ARCHOS.PlayTime.ImmunePly = {
+	-- "STEAM_ID_LAN",
+	-- "VALVE_ID_LOOPBACK"
+	-- }
+	
+	-- ARCHOS.Hook.Add("CheckPassword","CheckHours",function(id,ip,sv,cl,name)
+		-- if table.HasValue(ARCHOS.PlayTime.ImmunePly,id) then return true end
+		-- local id2 = string.format("7656119%u",7960265728+tonumber(string.sub(id,11))*2+(string.sub(id,9,9) == "1" and 1 or 0))
+		-- local url = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key="..ARCHOS.PlayTime.SteamAPI.."&steamid="..id2.."&format=json"
+		-- http.Fetch(url,
+			-- function(body)
+				-- local tbl = util.JSONToTable(body)["response"]["games"]
+				-- for k,v in pairs(tbl) do
+					-- if v["appid"] == 4000 then
+						-- local hrs = tonumber(v["playtime_forever"]/60)
+						-- if hrs >= ARCHOS.PlayTime.Limit then
+							-- return true
+						-- else
+							-- umsg.Start("ArchOS_NotEnoughHours")
+							-- umsg.String(name)
+							-- umsg.String(id)
+							-- umsg.Float(hrs)
+							-- umsg.End()
+							-- return false, "CZ: Nemáš dostatek nahraných hodin ve høe Garry's Mod (Požadovaný "..ARCHOS.PlayTime.Limit..") nebo máš profil nastavený na soukromý! EN: You do not have enough hours on Garry's Mod (Required "..ARCHOS.PlayTime.Limit..") or you have your steam profile set to private!"
+						-- end
+					-- end
+				-- end
+			-- end,
+			-- function(error)
+			-- end
+		-- )
+	-- end)
+	
+	-- ARCHOS.Hook.Add("PlayerInitialSpawn","SetPlayTime",function(ply)
+		-- local url = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key="..ARCHOS.PlayTime.SteamAPI.."&steamid="..ply:SteamID64().."&format=json"
+		-- http.Fetch(url,
+			-- function(body)
+				-- local tbl = util.JSONToTable(body)["response"]["games"]
+				-- for k,v in pairs(tbl) do
+					-- if v["appid"] == 4000 then
+						-- local hrs = tonumber(v["playtime_forever"]/60)
+						-- ply:SetNWInt("PlayTime",hrs)
+					-- end
+				-- end
+			-- end,
+			-- function(error)
+			-- end
+		-- )
+	-- end)
+-- end
